@@ -1,0 +1,148 @@
+#+TITLE: Python secrets usage
+#+OPTIONS: ^:nil
+#+PROPERTY: header-args:sh :session *shell python-secrets-usage sh* :results silent raw
+#+PROPERTY: header-args:python :session *shell python-secrets-usage python* :results code replace
+
+** System environment
+
+- Debian 9.11
+
+- Python 3.7.0
+
+** Imports
+
+#+BEGIN_SRC python :results silent raw
+import secrets
+import string
+#+END_SRC
+
+** Random numbers
+*** secrets.SystemRandom
+
+https://docs.python.org/3/library/random.html#random.SystemRandom
+
+*** secrets.choise(sequence)
+
+#+BEGIN_SRC python
+lst = range(10)
+secrets.choice(lst)
+#+END_SRC
+
+#+RESULTS:
+#+begin_src python
+5
+#+end_src
+
+*** secrets.randbelow(n)
+
+#+BEGIN_SRC python
+secrets.randbelow(10)
+#+END_SRC
+
+#+RESULTS:
+#+begin_src python
+7
+#+end_src
+
+*** secrets.randbits(k)
+
+#+BEGIN_SRC python
+secrets.randbits(256)
+#+END_SRC
+
+#+RESULTS:
+#+begin_src python
+79484763221189811424839929604953956401071024570592964722111933587081904894021
+#+end_src
+
+** Generation token
+*** secrets.token_bytes([nbytes=None])
+
+#+BEGIN_SRC python
+secrets.token_bytes()
+#+END_SRC
+
+#+RESULTS:
+#+begin_src python
+b'\r\xad\xba\x1f\xab\x8d\x0c@W\x95z=k\xcf\x96\r\x97\xd2.X\xe99Mr"+\xaf\x84\x1bk\xd0\x1c'
+#+end_src
+
+*** secrets.token_hex([nbytes=None])
+
+#+BEGIN_SRC python
+secrets.token_hex()
+#+END_SRC
+
+#+RESULTS:
+#+begin_src python
+95bffa915e7cbcf7b20204d6f2a00fe3d4fc7d106ba5f84fd3325ead8175e0c6
+#+end_src
+
+*** secrets.token_urlsafe([nbytes=None])
+
+#+BEGIN_SRC python
+secrets.token_urlsafe()
+#+END_SRC
+
+#+RESULTS:
+#+begin_src python
+rTi_glsLlC2663o8rfXrU0TJXvs2N7ZKoxNcSkY4XLE
+#+end_src
+
+** Other functions
+*** secrets.compare_digest(a, b)
+
+https://docs.python.org/3/library/hmac.html#hmac.compare_digest
+
+** Recipes and best practices
+
+Generate an eight-character alphanumeric password.
+
+#+BEGIN_SRC python
+alphabet = string.ascii_letters + string.digits
+password = ''.join(secrets.choice(alphabet) for i in range(8))
+password
+#+END_SRC
+
+#+RESULTS:
+#+begin_src python
+osyzjYVO
+#+end_src
+
+Generate a ten-character alphanumeric password with at least one
+lowercase character, at least one uppercase character, and at least
+three digits.
+
+#+BEGIN_SRC python
+alphabet = string.ascii_letters + string.digits
+while True:
+    password = ''.join(secrets.choice(alphabet) for i in range(10))
+    if (any(c.islower() for c in password)
+            and any(c.isupper() for c in password)
+            and sum(c.isdigit() for c in password) >= 3):
+        break
+password
+#+END_SRC
+
+#+RESULTS:
+#+begin_src python
+r09fU39loy
+#+end_src
+
+Generate an XKCD-style passphrase:
+
+#+BEGIN_SRC python
+with open('/usr/share/dict/words') as f:
+    words = [word.strip() for word in f]
+    password = ' '.join(secrets.choice(words) for i in range(4))
+password
+#+END_SRC
+
+#+RESULTS:
+#+begin_src python
+smelted conduced payrolls Lina's
+#+end_src
+
+** References
+
+- https://docs.python.org/3/library/secrets.html
